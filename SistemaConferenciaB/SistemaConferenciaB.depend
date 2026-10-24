@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1792832845 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\funciones.cpp
+	"Estructuras.h"
+
+1792832845 c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\estructuras.h
+	<iostream>
+	<string>
+	<vector>
+
+1792833717 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\main.cpp
+	"Estructuras.h"
+
