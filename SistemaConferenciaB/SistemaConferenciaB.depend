@@ -1,12 +1,66 @@
 # depslib dependency file v1.0
-1792832845 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\funciones.cpp
+1792902521 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\funciones.cpp
 	"Estructuras.h"
+	"conexion.h"
 
 1792832845 c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\estructuras.h
 	<iostream>
 	<string>
 	<vector>
 
-1792833717 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\main.cpp
+1792902130 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\main.cpp
 	"Estructuras.h"
+
+1792904947 c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\conexion.h
+	<mysql.h>
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql.h
+	<sys/types.h>
+	<windows.h>
+	<winsock2.h>
+	"mysql_version.h"
+	"mysql_com.h"
+	"mysql_time.h"
+	"my_list.h"
+	"mysql/client_plugin.h"
+	"typelib.h"
+	"my_alloc.h"
+
+1500307624 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql_version.h
+	<custom_conf.h>
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql_com.h
+	"binary_log_types.h"
+	"my_command.h"
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\binary_log_types.h
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\my_command.h
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql_time.h
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\my_list.h
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql\client_plugin.h
+	<stdarg.h>
+	<stdlib.h>
+	"plugin_auth_common.h"
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql\plugin_auth_common.h
+	<windows.h>
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\typelib.h
+	"my_alloc.h"
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\my_alloc.h
+	"mysql/psi/psi_memory.h"
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql\psi\psi_memory.h
+	"psi_base.h"
+
+1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql\psi\psi_base.h
+
+1792902130 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\conexion.cpp
+	"conexion.h"
+	<iostream>
 

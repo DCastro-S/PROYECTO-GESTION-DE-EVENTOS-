@@ -1,4 +1,5 @@
 #include "Estructuras.h"
+#include "conexion.h"
 
 // Creación real de los vectores globales
 vector<Sesion> sesiones;
@@ -90,15 +91,43 @@ void registrarParticipante() {
     cout << "\n------- REGISTRAR NUEVO PARTICIPANTE -------\n";
     cout << "Ingrese ID o carne del participante: ";
     cin >> p.id;
+
     if (buscarParticipantePorId(p.id) != -1) {
         cout << "Error: Ya existe un participante registrado con este ID.\n";
         return;
     }
+
+    // para la base de datos, se solicta ahora nombre, correo electronico y numero de telefono
     cin.ignore();
     cout << "Ingrese Nombre completo: ";
     getline(cin, p.nombre);
+
+    string correo, telefono;
+    cout << "Ingrese Correo electronico: ";
+    getline(cin, correo);
+    cout << "Ingrese Telefono: ";
+    getline(cin, telefono);
+
+    // 1. Guardamos en el vector local
     participantes.push_back(p);
-    cout << "¡Participante registrado con exito!\n";
+
+    // 2. Guardamos en la Base de Datos MySQL
+    MYSQL* conn = conectarBD();
+    if (conn != NULL) {
+        // Consulta SQL con comillas simples en el ID y los textos
+        string query = "INSERT INTO participantes (id, nombre, correo, telefono) VALUES ('" +
+                       p.id + "', '" + p.nombre + "', '" + correo + "', '" + telefono + "')";
+
+        if (mysql_query(conn, query.c_str()) == 0) {
+            cout << "¡Participante registrado con exito en memoria y en la Base de Datos!\n";
+        } else {
+            cout << "Aviso: Se guardo localmente, pero hubo un error al sincronizar con MySQL: " << mysql_error(conn) << endl;
+        }
+
+        mysql_close(conn); // Cerramos la conexión
+    } else {
+        cout << "¡Participante registrado con exito en memoria (Sin conexion a Base de Datos)!\n";
+    }
 }
 
 void crearSesion() {
@@ -121,8 +150,26 @@ void crearSesion() {
     }
     s.cupoMaximo = leerEnteroSeguro("Cupo Maximo de asistentes: ");
     s.cupoActual = 0;
+
+    // 1. Guardamos en el vector local
     sesiones.push_back(s);
-    cout << "¡Sesion creada con exito!\n";
+
+    // 2. Guardamos en la Base de Datos MySQL
+    MYSQL* conn = conectarBD();
+    if (conn != NULL) {
+        string query = "INSERT INTO sesiones (id, titulo, hora_inicio, hora_fin, cupo_maximo, cupo_actual) VALUES ('" +
+                       s.id + "', '" + s.titulo + "', " + to_string(s.horaInicio) + ", " +
+                       to_string(s.horaFin) + ", " + to_string(s.cupoMaximo) + ", " + to_string(s.cupoActual) + ")";
+
+        if (mysql_query(conn, query.c_str()) == 0) {
+            cout << "¡Sesion creada con exito en memoria y en la Base de Datos!\n";
+        } else {
+            cout << "Aviso: Se guardo localmente, pero hubo un error al sincronizar con MySQL: " << mysql_error(conn) << endl;
+        }
+        mysql_close(conn);
+    } else {
+        cout << "¡Sesion creada con exito en memoria (Sin conexion a Base de Datos)!\n";
+    }
 }
 
 void inscribirParticipante() {
@@ -165,10 +212,27 @@ void inscribirParticipante() {
             }
         }
     }
+
+    // 1. Guardamos en el vector local e incrementamos cupo
     Inscripcion nuevaIns = {idPart, idSes};
     inscripciones.push_back(nuevaIns);
     sesionObjetivo.cupoActual++;
-    cout << "¡Inscripcion confirmada exitosamente!\n";
+
+    // 2. Guardamos la inscripción en MySQL y actualizamos el cupo actual de la sesión
+    MYSQL* conn = conectarBD();
+    if (conn != NULL) {
+        string queryIns = "INSERT INTO inscripciones (id_participante, id_sesion) VALUES ('" + idPart + "', '" + idSes + "')";
+        string queryUpd = "UPDATE sesiones SET cupo_actual = cupo_actual + 1 WHERE id = '" + idSes + "'";
+
+        if (mysql_query(conn, queryIns.c_str()) == 0 && mysql_query(conn, queryUpd.c_str()) == 0) {
+            cout << "¡Inscripcion confirmada con exito en memoria y en la Base de Datos!\n";
+        } else {
+            cout << "Aviso: Se registro localmente, pero hubo un error al sincronizar con MySQL: " << mysql_error(conn) << endl;
+        }
+        mysql_close(conn);
+    } else {
+        cout << "¡Inscripcion confirmada con exito en memoria (Sin conexion a Base de Datos)!\n";
+    }
 }
 
 void mostrarEstadoSesiones() {
@@ -212,7 +276,7 @@ string iniciarSesion() {
     cout << "Contrasena: ";
     cin >> password;
 
-    // Credenciales quemadas de ejemplo (puedes cambiarlas)
+    // Credenciales de ejemplo
     if (usuario == "admin" && password == "admin123") {
         cout << "¡Bienvenido Administrador!\n";
         return "admin";
@@ -225,4 +289,61 @@ string iniciarSesion() {
         cout << "Error: Usuario o contrasena incorrectos.\n";
         return "";
     }
+}
+
+
+void cargarDatosDesdeBD() {
+    MYSQL* conn = conectarBD();
+    if (conn == NULL) return;
+
+    // 1. Cargar Participantes desde MySQL a la memoria
+    if (mysql_query(conn, "SELECT id, nombre FROM participantes") == 0) {
+        MYSQL_RES* res = mysql_store_result(conn);
+        if (res != NULL) {
+            MYSQL_ROW row;
+            while ((row = mysql_fetch_row(res)) != NULL) {
+                Participante p;
+                p.id = row[0] ? row[0] : "";
+                p.nombre = row[1] ? row[1] : "";
+                participantes.push_back(p);
+            }
+            mysql_free_result(res);
+        }
+    }
+
+    // 2. Cargar Sesiones desde MySQL a la memoria
+    if (mysql_query(conn, "SELECT id, titulo, hora_inicio, hora_fin, cupo_maximo, cupo_actual FROM sesiones") == 0) {
+        MYSQL_RES* res = mysql_store_result(conn);
+        if (res != NULL) {
+            MYSQL_ROW row;
+            while ((row = mysql_fetch_row(res)) != NULL) {
+                Sesion s;
+                s.id = row[0] ? row[0] : "";
+                s.titulo = row[1] ? row[1] : "";
+                s.horaInicio = row[2] ? stoi(row[2]) : 0;
+                s.horaFin = row[3] ? stoi(row[3]) : 0;
+                s.cupoMaximo = row[4] ? stoi(row[4]) : 0;
+                s.cupoActual = row[5] ? stoi(row[5]) : 0;
+                sesiones.push_back(s);
+            }
+            mysql_free_result(res);
+        }
+    }
+
+    // 3. Cargar Inscripciones desde MySQL a la memoria
+    if (mysql_query(conn, "SELECT id_participante, id_sesion FROM inscripciones") == 0) {
+        MYSQL_RES* res = mysql_store_result(conn);
+        if (res != NULL) {
+            MYSQL_ROW row;
+            while ((row = mysql_fetch_row(res)) != NULL) {
+                Inscripcion ins;
+                ins.idParticipante = row[0] ? row[0] : "";
+                ins.idSesion = row[1] ? row[1] : "";
+                inscripciones.push_back(ins);
+            }
+            mysql_free_result(res);
+        }
+    }
+
+    mysql_close(conn);
 }

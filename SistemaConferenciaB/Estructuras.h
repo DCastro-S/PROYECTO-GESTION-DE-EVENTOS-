@@ -46,7 +46,7 @@ void crearSesion();
 void inscribirParticipante();
 void mostrarEstadoSesiones();
 string iniciarSesion();
-
+void cargarDatosDesdeBD();
 #endif // ESTRUCTURAS_H_INCLUDED
 
 

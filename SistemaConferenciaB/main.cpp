@@ -6,8 +6,10 @@
 
 int main() {
     string rol="";
+    //carga de de datos desde la base de datos a los vectores al iniciar
+    cargarDatosDesdeBD();
 
-    //Buvcle de login antes de entrar al sistema
+    //incorporacion del Bucle de login antes de entrar al sistema
     while (rol==""){
         rol = iniciarSesion();
     }
@@ -38,10 +40,11 @@ int main() {
             cout << "7. Salir del Sistema\n";
         }
         opcion = leerEnteroSeguro("Seleccione una opcion: ");
-        //Control de opciones segun el rol
+        //Control de opciones segun el rol (admin, registrador)
         if (rol == "registrador" && (opcion == 2 || opcion == 6)) {
             cout << "Acceso denegado: Esta opcion es exclusiva para Administradores.\n";
             continue;
+
         }
         switch (opcion) {
             case 1: registrarParticipante(); break;
@@ -57,3 +60,4 @@ int main() {
 
     return 0;
 }
+
