@@ -1,14 +1,14 @@
 # depslib dependency file v1.0
-1792902521 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\funciones.cpp
+1794227822 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\funciones.cpp
 	"Estructuras.h"
 	"conexion.h"
 
-1792832845 c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\estructuras.h
+1794266830 c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\estructuras.h
 	<iostream>
 	<string>
 	<vector>
 
-1792902130 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\main.cpp
+1794227896 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\main.cpp
 	"Estructuras.h"
 
 1792904947 c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\conexion.h
@@ -60,7 +60,7 @@
 
 1499928932 c:\libmysql\mysql-connector-c-6.1.11-winx64\include\mysql\psi\psi_base.h
 
-1792902130 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\conexion.cpp
+1793079143 source:c:\users\diana\onedrive\desktop\algoritmos git hub\proyecto-gestion-de-eventos-\sistemaconferenciab\conexion.cpp
 	"conexion.h"
 	<iostream>
 

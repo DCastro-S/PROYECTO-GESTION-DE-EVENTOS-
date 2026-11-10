@@ -5,19 +5,19 @@
 vector<Sesion> sesiones;
 vector<Participante> participantes;
 vector<Inscripcion> inscripciones;
-
+//Uso de la funcion  antitontos
 int leerEnteroSeguro(string mensaje) {
     int valor;
     while (true) {
         cout << mensaje;
         cin >> valor;
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(10000, '\n');
+        if (cin.fail()) {  //ci.fail limpia y vuelve a preguntar sin que el programa cierre de golpe
+            cin.clear(); // Limpia el estado del cin permitiendo volver a aceptar la entrada de datos (desbloquea el cin)
+            cin.ignore(10000, '\n'); // ignora hasta el soguiente salto de linea (borra la entrada que quedó en el teclado
             cout << "Error: Entrada invalida. Por favor, ingrese un numero entero.\n";
         } else {
-            cin.ignore(10000, '\n');
-            return valor;
+            cin.ignore(10000, '\n'); // si todo sale bien limpia el enter sobrante
+            return valor; //retornará el resultado si todo cumple
         }
     }
 }
@@ -26,47 +26,51 @@ int buscarSesionPorId(string id) {
     for (size_t i = 0; i < sesiones.size(); i++) {
         if (sesiones[i].id == id) return i;
     }
-    return -1;
+    return -1; /* esta funcion vaa recorrer los vectores de sesion en busca deuna coincidencia si la encuentra devuelve
+    una posicion numerica, y si no devuelve -1 que nos dice "no existe"*/
 }
 
 int buscarParticipantePorId(string id) {
     for (size_t i = 0; i < participantes.size(); i++) {
         if (participantes[i].id == id) return i;
     }
-    return -1;
+    return -1; /* De igual manera, recorrerá los vectores en busca de coincidencias exactas
+    si lo encuentra devolverá su posición numerica, si no devuelve el -1*/
 }
 
-void buscarSesionPorTitulo() {
-    cin.ignore();
+void buscarSesionPorTitulo() { //con una fraccion de la palbra puede buscar dl titulo
+    cin.ignore(); //limpia el enter que quedó al seleccionar el case 5 en el main
     string criterio;
     cout << "\n--- BUSCAR SESION POR PALABRA CLAVE / TITULO ---\n";
     cout << "Ingrese parte del titulo de la conferencia: ";
-    getline(cin, criterio);
+    getline(cin, criterio); // con el podemos leer palabras complejas y utilizando espacios ejem: "curso c++"
 
-    bool encontrada = false;
+    bool encontrada = false;//Empieza en falso si alguna sesion coincide cambia flaso, y si al terminar de revisar el vectos no encuentra coincidencias seguirá en false, avisandoque no hubo coincidencias.
     cout << "\nResultados de la busqueda:\n";
-    for (const auto& s : sesiones) {
-        if (s.titulo.find(criterio) != string::npos) {
-            cout << "ID: [" << s.id << "] " << s.titulo
+    for (const auto& s : sesiones) { /*auto le dice a c++ que deduzca el tipo de dato, y como vector
+            sesiones tiene elemntos de tipo sesion no hay necesidad de escribir sesion&*/
+
+        if (s.titulo.find(criterio) != string::npos) { //van a recorrer las sesiones dentro del vector
+            cout << "ID: [" << s.id << "] " << s.titulo //s.titulo, de la estructura solo extraeremos el titulo
                  << " | Horario: " << s.horaInicio << " - " << s.horaFin
                  << " hrs | Aforo: " << s.cupoActual << "/" << s.cupoMaximo << "\n";
             encontrada = true;
         }
     }
     if (!encontrada) {
-        cout << "No se encontraron sesiones que coincidan con ese criterio.\n";
+        cout << "No se encontraron sesiones que coincidan con ese criterio.\n"; // mensaje que mostrara si no se encuentran coincidencias
     }
 }
 
 void ordenarSesionesPorHorario() {
-    if (sesiones.size() < 2) {
+    if (sesiones.size() < 2) { // si el numero estra entre 0 y 1 no habrá nacesidad de ordenr nada, caso contraio cuando el umero sea >= 2
         cout << "\nNo hay suficientes sesiones para ordenar.\n";
         return;
     }
     for (size_t i = 0; i < sesiones.size() - 1; i++) {
-        for (size_t j = 0; j < sesiones.size() - i - 1; j++) {
+        for (size_t j = 0; j < sesiones.size() - i - 1; j++) { // estos ciclos anidades van a comparse entre si la sesion inicia nates que otra entonces habrá un ordenamiento y si intercambiarán de posicin
             if (sesiones[j].horaInicio > sesiones[j + 1].horaInicio) {
-                Sesion temp = sesiones[j];
+                Sesion temp = sesiones[j]; //uso de la variable temp. que temporalmente servirá para cambiar de lugar entre sesiones
                 sesiones[j] = sesiones[j + 1];
                 sesiones[j + 1] = temp;
             }
@@ -75,18 +79,20 @@ void ordenarSesionesPorHorario() {
     cout << "\n¡Sesiones ordenadas cronologicamente con exito!\n";
 }
 
-bool yaEstaInscrito(string idPart, string idSes) {
+bool yaEstaInscrito(string idPart, string idSes) { //va a revisar la lista de inscripciones para comprobra si un participante en especifico ya tiene un cupo asignado dentro de la sesion
     for (const auto& ins : inscripciones) {
         if (ins.idParticipante == idPart && ins.idSesion == idSes) return true;
     }
-    return false;
+    return false;// devolverá verdadero o falso
 }
 
 bool hayChoqueDeHorario(const Sesion& s1, const Sesion& s2) {
     return (s1.horaInicio < s2.horaFin && s2.horaInicio < s1.horaFin);
-}
+} // comprobará si un horario de cierta sesion se cruza con otra a la que el usuario ya está inscrita
 
-void registrarParticipante() {
+
+//funciones de operacion
+void registrarParticipante() { //como tal vamos a pedir los datos del participante.
     Participante p;
     cout << "\n------- REGISTRAR NUEVO PARTICIPANTE -------\n";
     cout << "Ingrese ID o carne del participante: ";
@@ -108,7 +114,7 @@ void registrarParticipante() {
     cout << "Ingrese Telefono: ";
     getline(cin, telefono);
 
-    // 1. Guardamos en el vector local
+    // 1. Guardamos en el vector local y ejecutamos el comando SQL inserte para guardar en la base de datos
     participantes.push_back(p);
 
     // 2. Guardamos en la Base de Datos MySQL
@@ -130,13 +136,13 @@ void registrarParticipante() {
     }
 }
 
-void crearSesion() {
+void crearSesion() { // permite la creacion de la conferencia
     Sesion s;
     cout << "\n------- CREAR NUEVA CONFERENCIA / SESION -------\n";
     cout << "Ingrese ID de la sesion: ";
     cin >> s.id;
     if (buscarSesionPorId(s.id) != -1) {
-        cout << "Error: Ya existe una sesion registrada con este ID.\n";
+        cout << "Error: Ya existe una sesion registrada con este ID.\n"; // evalua si el ID ya existe o no
         return;
     }
     cin.ignore();
@@ -154,7 +160,7 @@ void crearSesion() {
     // 1. Guardamos en el vector local
     sesiones.push_back(s);
 
-    // 2. Guardamos en la Base de Datos MySQL
+    // 2. Guardamos en la Base de Datos MySQL, se registrará en la tabla sesiones
     MYSQL* conn = conectarBD();
     if (conn != NULL) {
         string query = "INSERT INTO sesiones (id, titulo, hora_inicio, hora_fin, cupo_maximo, cupo_actual) VALUES ('" +
@@ -172,7 +178,8 @@ void crearSesion() {
     }
 }
 
-void inscribirParticipante() {
+void inscribirParticipante() { /*Aqui evaluamos todas las condiciones, que el participante exista, que la sesion exista, que
+    el usuario no esté inscrito con anterioridad, que no exista choque de horarios, si cumple con todo actualiza y ejecuta un insert*/
     cout << "\n------- INSCRIPCION A CONFERENCIA -------\n";
     string idPart, idSes;
     cout << "Ingrese ID del Participante: ";
@@ -235,7 +242,7 @@ void inscribirParticipante() {
     }
 }
 
-void mostrarEstadoSesiones() {
+void mostrarEstadoSesiones() { //Aqui se imprime el reporte completoen pantalla
     cout << "\n===================================================\n";
     cout << "         ESTADO ACTUAL DE LAS CONFERENCIAS         \n";
     cout << "===================================================\n";
@@ -292,13 +299,14 @@ string iniciarSesion() {
 }
 
 
-void cargarDatosDesdeBD() {
-    MYSQL* conn = conectarBD();
-    if (conn == NULL) return;
+void cargarDatosDesdeBD() { //Cuando main se ejecute realiza consultas select masivas en mySQL para rellenar los vectores en memoria RAM y asi el programa recuerde todo lo qeu se registró
+
+    MYSQL* conn = conectarBD(); //Abre la comunicacion
+    if (conn == NULL) return; // En dado caso XAMPP este apagado, para que salga cin return y que el programa funcione al menos en memoria local sin trabarse
 
     // 1. Cargar Participantes desde MySQL a la memoria
     if (mysql_query(conn, "SELECT id, nombre FROM participantes") == 0) {
-        MYSQL_RES* res = mysql_store_result(conn);
+        MYSQL_RES* res = mysql_store_result(conn); //MYSQL_RES* res paquete de memoria
         if (res != NULL) {
             MYSQL_ROW row;
             while ((row = mysql_fetch_row(res)) != NULL) {
@@ -316,16 +324,16 @@ void cargarDatosDesdeBD() {
         MYSQL_RES* res = mysql_store_result(conn);
         if (res != NULL) {
             MYSQL_ROW row;
-            while ((row = mysql_fetch_row(res)) != NULL) {
+            while ((row = mysql_fetch_row(res)) != NULL) {//Cada renglón (row)Funciona como una lista
                 Sesion s;
                 s.id = row[0] ? row[0] : "";
                 s.titulo = row[1] ? row[1] : "";
                 s.horaInicio = row[2] ? stoi(row[2]) : 0;
-                s.horaFin = row[3] ? stoi(row[3]) : 0;
+                s.horaFin = row[3] ? stoi(row[3]) : 0; // stoi (String to integer) convierte texto "900" en numero entero para poder guardarlo
                 s.cupoMaximo = row[4] ? stoi(row[4]) : 0;
                 s.cupoActual = row[5] ? stoi(row[5]) : 0;
                 sesiones.push_back(s);
-            }
+            } //push_back() mete cada registro construido a su vector
             mysql_free_result(res);
         }
     }
